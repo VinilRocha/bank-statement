@@ -32,11 +32,9 @@ export const GlobalStyle = createGlobalStyle`
     --red: #FE3E6D;
     --text: #3B3B3B;
     --text-light: #6B7076;
-    --border: #C7CBCF
-
-    --white: #FFFFFF;
-    --gray-1: #F0F4F8;
-    --gray-2: #DEE4E9;
+    --border: #C7CBCF;
+    --gray1: #F0F4F8;
+    --gray2: #DEE4E9;
   }
 
   *{
@@ -46,6 +44,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   html  {
+    font-family: 'Avenir', sans-serif;
     @media(max-width: 1080px) {
       font-size: 93.75%;
     }
@@ -55,8 +54,8 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background: var(--white);
     -webkit-font-smoothing: antialiased;
+    background: #fff;
   }
 
   body, input, textarea, button {
@@ -70,6 +69,7 @@ export const GlobalStyle = createGlobalStyle`
 
   button {
     cursor: pointer;
+    border: none;
   }
 
   [disabled] {
