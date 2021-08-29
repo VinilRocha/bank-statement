@@ -29,9 +29,8 @@ export function Tabs() {
   const [filterButtons, setFilterButtons] = useState(buttons);
   const { getFilteredStatements } = useStatement();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleButtonClick(e: any) {
-    const currentButton = e.target.value;
+  function handleButtonClick(value: string) {
+    const currentButton = value;
 
     const newButtons = filterButtons.map(button =>
       button.value === currentButton
@@ -56,7 +55,9 @@ export function Tabs() {
           type="button"
           key={filter.value}
           value={filter.value}
-          onClick={handleButtonClick}
+          onClick={e =>
+            handleButtonClick((e.target as HTMLButtonElement).value)
+          }
           className={`${filter.active && 'active'}`}
         >
           {filter.label}

@@ -6,6 +6,7 @@ import {
   useContext,
 } from 'react';
 import { api } from '../services/api';
+import { handleStatementFilter } from '../utils/handleFilterStatement';
 
 export interface StatementDetail {
   actor: string;
@@ -26,8 +27,11 @@ export interface Statement {
 interface StatementContextData {
   statements: Statement[];
   filteredStatements: Statement[];
+  searchedStatements: Statement[];
   hasFilterActive: boolean;
-  getFilteredStatements: (filter: string) => void;
+  hasSearchActive: boolean;
+  getFilteredStatements: (filterTerm: string) => void;
+  getSearchedTerm: (filterTerm: string) => void;
 }
 
 interface StatementProviderProps {
@@ -41,41 +45,42 @@ const StatementContext = createContext<StatementContextData>(
 export function StatementProvider({ children }: StatementProviderProps) {
   const [statements, setStatements] = useState<Statement[]>([]);
   const [filteredStatements, setFilteredStatements] = useState<Statement[]>([]);
+  const [searchedStatements, setSearchedStatements] = useState<Statement[]>([]);
   const [hasFilterActive, setHasFilterActive] = useState(false);
+  const [hasSearchActive, setHasSearchActive] = useState(false);
 
   useEffect(() => {
     api.get('statement').then(response => setStatements(response.data.results));
   }, []);
 
-  function getFilteredStatements(filter: string) {
-    if (filter === 'all') {
-      setHasFilterActive(false);
-    } else {
-      setHasFilterActive(true);
-      const newStatetements: Statement[] = [];
+  function getFilteredStatements(filterTerm: string) {
+    const newStatetements: Statement[] = [];
 
-      statements.forEach(({ amountTotal, date, items }) => {
-        function handleFilter(item: { scheduled: boolean; entry: string }) {
-          if (filter === 'scheduled') {
-            return item.scheduled === true;
-          }
-          return item.entry === filter;
-        }
-        const filteredStatement = items.filter(handleFilter);
-
-        if (filteredStatement.length > 0) {
-          const filteredObject = {
-            amountTotal,
-            date,
-            items: filteredStatement,
-          };
-
-          newStatetements.push(filteredObject);
-        }
-      });
-
-      setFilteredStatements(newStatetements);
+    if (filterTerm === 'all') {
+      return setHasFilterActive(false);
     }
+
+    setHasFilterActive(true);
+    handleStatementFilter(statements, newStatetements, filterTerm);
+
+    return setFilteredStatements(newStatetements);
+  }
+
+  function getSearchedTerm(searchTerm: string) {
+    const newStatetements: Statement[] = [];
+
+    if (searchTerm === '') {
+      return setHasSearchActive(false);
+    }
+
+    const statementToSearchIn = hasFilterActive
+      ? filteredStatements
+      : statements;
+
+    setHasSearchActive(true);
+    handleStatementFilter(statementToSearchIn, newStatetements, searchTerm);
+
+    return setSearchedStatements(newStatetements);
   }
 
   return (
@@ -83,8 +88,11 @@ export function StatementProvider({ children }: StatementProviderProps) {
       value={{
         statements,
         filteredStatements,
+        searchedStatements,
         hasFilterActive,
+        hasSearchActive,
         getFilteredStatements,
+        getSearchedTerm,
       }}
     >
       {children}

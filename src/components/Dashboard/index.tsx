@@ -22,16 +22,32 @@ import {
 } from './styles';
 
 export function Dashboard() {
-  const { statements, filteredStatements, hasFilterActive } = useStatement();
+  const {
+    statements,
+    filteredStatements,
+    searchedStatements,
+    hasFilterActive,
+    hasSearchActive,
+  } = useStatement();
   const [statement, setStatement] = useState<Statement[]>(statements);
 
   useEffect(() => {
-    if (hasFilterActive) {
-      setStatement(filteredStatements);
-    } else {
-      setStatement(statements);
+    if (hasSearchActive) {
+      return setStatement(searchedStatements);
     }
-  }, [statements, filteredStatements, hasFilterActive]);
+
+    if (hasFilterActive) {
+      return setStatement(filteredStatements);
+    }
+
+    return setStatement(statements);
+  }, [
+    statements,
+    filteredStatements,
+    searchedStatements,
+    hasFilterActive,
+    hasSearchActive,
+  ]);
 
   return (
     <Wrapper>
