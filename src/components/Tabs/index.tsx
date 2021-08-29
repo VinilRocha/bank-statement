@@ -1,19 +1,67 @@
+import { useState } from 'react';
 import { useStatement } from '../../hooks/useStatement';
-import { Container } from './styles';
+import { Button } from './styles';
 
 export function Tabs() {
-  const { listCreditStatement } = useStatement();
+  const buttons = [
+    {
+      value: 'all',
+      label: 'Tudo',
+      active: true,
+    },
+    {
+      value: 'CREDIT',
+      label: 'Entrada',
+      active: false,
+    },
+    {
+      value: 'DEBIT',
+      label: 'Saída',
+      active: false,
+    },
+    {
+      value: 'scheduled',
+      label: 'Futuro',
+      active: false,
+    },
+  ];
+
+  const [filterButtons, setFilterButtons] = useState(buttons);
+  const { getFilteredStatements } = useStatement();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleButtonClick(e: any) {
+    const currentButton = e.target.value;
+
+    const newButtons = filterButtons.map(button =>
+      button.value === currentButton
+        ? {
+            ...button,
+            active: true,
+          }
+        : {
+            ...button,
+            active: false,
+          },
+    );
+
+    setFilterButtons(newButtons);
+    getFilteredStatements(currentButton);
+  }
 
   return (
-    <Container>
-      <button type="button" className="active">
-        Tudo
-      </button>
-      <button type="button" onClick={listCreditStatement}>
-        Entrada
-      </button>
-      <button type="button">Saída</button>
-      <button type="button">Futuro</button>
-    </Container>
+    <div>
+      {filterButtons.map(filter => (
+        <Button
+          type="button"
+          key={filter.value}
+          value={filter.value}
+          onClick={handleButtonClick}
+          className={`${filter.active && 'active'}`}
+        >
+          {filter.label}
+        </Button>
+      ))}
+    </div>
   );
 }

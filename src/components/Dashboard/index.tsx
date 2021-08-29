@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
-import { useStatement } from '../../hooks/useStatement';
+import { useStatement, Statement } from '../../hooks/useStatement';
+
 import {
   handleTransaction,
   handleTransactionIcon,
@@ -20,8 +22,17 @@ import {
 } from './styles';
 
 export function Dashboard() {
-  const data = useStatement();
-  console.log(data);
+  const { statements, filteredStatements, hasFilterActive } = useStatement();
+  const [statement, setStatement] = useState<Statement[]>(statements);
+
+  useEffect(() => {
+    if (hasFilterActive) {
+      setStatement(filteredStatements);
+    } else {
+      setStatement(statements);
+    }
+  }, [statements, filteredStatements, hasFilterActive]);
+
   return (
     <Wrapper>
       <Container>
@@ -32,7 +43,7 @@ export function Dashboard() {
           <p>Valor</p>
         </DashboardHeader>
 
-        {data.statements.map(({ amountTotal, date, items }) => (
+        {statement.map(({ amountTotal, date, items }) => (
           <StatementBox key={date}>
             <StatementDate>{moment(date).format('DD MMMM')}</StatementDate>
 

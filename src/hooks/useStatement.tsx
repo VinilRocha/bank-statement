@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { api } from '../services/api';
 
-interface StatementDetail {
+export interface StatementDetail {
   actor: string;
   amount: number;
   dateEvent: string;
@@ -17,7 +17,7 @@ interface StatementDetail {
   scheduled: boolean;
 }
 
-interface Statement {
+export interface Statement {
   amountTotal: number;
   date: string;
   items: StatementDetail[];
@@ -25,7 +25,9 @@ interface Statement {
 
 interface StatementContextData {
   statements: Statement[];
-  listCreditStatement: () => void;
+  filteredStatements: Statement[];
+  hasFilterActive: boolean;
+  getFilteredStatements: (filter: string) => void;
 }
 
 interface StatementProviderProps {
@@ -38,34 +40,53 @@ const StatementContext = createContext<StatementContextData>(
 
 export function StatementProvider({ children }: StatementProviderProps) {
   const [statements, setStatements] = useState<Statement[]>([]);
+  const [filteredStatements, setFilteredStatements] = useState<Statement[]>([]);
+  const [hasFilterActive, setHasFilterActive] = useState(false);
 
   useEffect(() => {
     api.get('statement').then(response => setStatements(response.data.results));
   }, []);
 
-  function listCreditStatement() {
-    const newStatetements: Statement[] = [];
+  function getFilteredStatements(filter: string) {
+    if (filter === 'all') {
+      setHasFilterActive(false);
+    } else {
+      setHasFilterActive(true);
+      const newStatetements: Statement[] = [];
 
-    statements.forEach(({ amountTotal, date, items }) => {
-      const filteredStatement = items.filter(item => item.entry === 'CREDIT');
+      statements.forEach(({ amountTotal, date, items }) => {
+        function handleFilter(item: { scheduled: boolean; entry: string }) {
+          if (filter === 'scheduled') {
+            return item.scheduled === true;
+          }
+          return item.entry === filter;
+        }
+        const filteredStatement = items.filter(handleFilter);
 
-      if (filteredStatement.length > 0) {
-        const filteredObject = {
-          amountTotal,
-          date,
-          items: filteredStatement,
-        };
+        if (filteredStatement.length > 0) {
+          const filteredObject = {
+            amountTotal,
+            date,
+            items: filteredStatement,
+          };
 
-        newStatetements.push(filteredObject);
-      }
-    });
+          newStatetements.push(filteredObject);
+        }
+      });
 
-    console.log(newStatetements);
-    setStatements(newStatetements);
+      setFilteredStatements(newStatetements);
+    }
   }
 
   return (
-    <StatementContext.Provider value={{ statements, listCreditStatement }}>
+    <StatementContext.Provider
+      value={{
+        statements,
+        filteredStatements,
+        hasFilterActive,
+        getFilteredStatements,
+      }}
+    >
       {children}
     </StatementContext.Provider>
   );

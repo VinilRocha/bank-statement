@@ -1,9 +1,9 @@
 import { createGlobalStyle } from 'styled-components';
 
-import AvenirBook from '../fonts/AvenirLTStd-Book.woff';
-import AvenirBook2 from '../fonts/AvenirLTStd-Book.woff2';
-import AvenirBlack from '../fonts/AvenirLTStd-Black.woff';
-import AvenirBlack2 from '../fonts/AvenirLTStd-Black.woff2';
+import AvenirBook from '../assets/fonts/AvenirLTStd-Book.woff';
+import AvenirBook2 from '../assets/fonts/AvenirLTStd-Book.woff2';
+import AvenirBlack from '../assets/fonts/AvenirLTStd-Black.woff';
+import AvenirBlack2 from '../assets/fonts/AvenirLTStd-Black.woff2';
 
 export const GlobalStyle = createGlobalStyle`
 
