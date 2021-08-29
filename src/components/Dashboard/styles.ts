@@ -115,13 +115,13 @@ export const StatementDetails = styled.div`
       width: 15%;
     }
 
-    &.debit {
+    &.credit {
       color: var(--blue);
       &:before {
         content: '+ ';
       }
     }
-    &.credit {
+    &.debit {
       color: var(--red);
       &:before {
         content: '- ';
