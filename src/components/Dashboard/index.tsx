@@ -57,7 +57,7 @@ export function Dashboard() {
         )}
 
         {statement.map(({ amountTotal, date, items }) => (
-          <>
+          <div key={Math.random()}>
             <DashboardHeader>
               <span />
               <p>Tipo de Transação</p>
@@ -65,12 +65,12 @@ export function Dashboard() {
               <p>Valor</p>
             </DashboardHeader>
 
-            <StatementBox key={date}>
+            <StatementBox>
               <StatementDate>{moment(date).format('DD MMMM')}</StatementDate>
 
               {items.map(
                 ({ actor, dateEvent, amount, entry, source, status }) => (
-                  <StatementDetails key={`${actor}${dateEvent}`}>
+                  <StatementDetails key={Math.random()}>
                     <div>
                       <img
                         src={handleTransactionIcon(status)}
@@ -91,7 +91,7 @@ export function Dashboard() {
                 saldo do dia <span> {formatReal(amountTotal)}</span>
               </StatementBalance>
             </StatementBox>
-          </>
+          </div>
         ))}
       </Container>
     </Wrapper>
